@@ -1,8 +1,7 @@
-\# Book API - Spring Boot
+# Book API - Spring Boot
 
 
-
-\## Description
+## Description
 
 Ce projet est une API REST simple développée avec Spring Boot permettant de gérer des livres.
 
@@ -10,33 +9,33 @@ Ce projet est une API REST simple développée avec Spring Boot permettant de g�
 
 Il a été créé dans un but d'apprentissage des bases de Spring Boot :
 
-\- création d'une API REST
+- création d'une API REST
 
-\- utilisation de Spring Web
+- utilisation de Spring Web
 
-\- persistance avec Spring Data JPA
+- persistance avec Spring Data JPA
 
-\- base de données embarquée H2
-
-
-
-\---
+- base de données embarquée H2
 
 
 
-\## Technologies utilisées
+---
 
-\- Java 17
 
-\- Spring Boot
 
-\- Spring Web
+## Technologies utilisées
 
-\- Spring Data JPA
+- Java 17
 
-\- H2 Database
+- Spring Boot
 
-\- Maven
+- Spring Web
 
-\- Postman
+- Spring Data JPA
+
+- H2 Database
+
+- Maven
+
+- Postman
 
