@@ -13,8 +13,8 @@ public class BookapiApplication {
 	@Bean
 	CommandLineRunner init(BookRepository repository) {
 		return args -> {
-			repository.save(new Book(null, "Clean Code", "Robert C. Martin"));
-			repository.save(new Book(null, "Effective Java", "Joshua Bloch"));
+			repository.save(new Book("Clean Code", "Robert C. Martin"));
+			repository.save(new Book("Effective Java", "Joshua Bloch"));
 		};
 	}
 	public static void main(String[] args) {
