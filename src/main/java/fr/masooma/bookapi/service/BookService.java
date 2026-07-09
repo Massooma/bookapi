@@ -5,6 +5,7 @@ import fr.masooma.bookapi.repository.BookRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import fr.masooma.bookapi.exception.BookNotFoundException;
 
 @Service
 public class BookService {
@@ -28,13 +29,13 @@ public class BookService {
 
     public Book updateBook(Long id, Book newBook){
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Livre introuvable"));
+                .orElseThrow(() -> new BookNotFoundException(id));
         book.setTitle(newBook.getTitle());
         book.setAuthor(newBook.getAuthor());
         return bookRepository.save(book);
     }
 
     public Book getById(Long id){
-        return  bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Livre introuvable"));
+        return  bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
     }
 }
