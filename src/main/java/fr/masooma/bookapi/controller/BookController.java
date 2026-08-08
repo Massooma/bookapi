@@ -2,8 +2,9 @@ package fr.masooma.bookapi.controller;
 
 import fr.masooma.bookapi.model.Book;
 import fr.masooma.bookapi.service.BookService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,18 +23,22 @@ public class BookController {
     }
 
     @PostMapping
-    public Book createBook(@RequestBody Book book){
+    @ResponseStatus(HttpStatus.CREATED)
+    public Book createBook(@Valid @RequestBody Book book){
         return bookService.saveBook(book);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBook(@PathVariable Long id){
         bookService.deleteBook(id);
     }
 
     @PutMapping("/{id}")
-    public Book updateBook(@PathVariable Long id, @RequestBody Book newBook){
-        return bookService.updateBook(id,newBook);
+    public Book updateBook(
+            @PathVariable Long id,
+            @Valid @RequestBody Book newBook){
+        return bookService.updateBook(id, newBook);
     }
 
     @GetMapping("/{id}")
