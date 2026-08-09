@@ -1,6 +1,8 @@
 package fr.masooma.bookapi.config;
 
 import fr.masooma.bookapi.model.Book;
+import fr.masooma.bookapi.model.BookDocument;
+import fr.masooma.bookapi.repository.BookDocumentRepository;
 import fr.masooma.bookapi.repository.BookRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -17,18 +19,33 @@ import java.nio.charset.StandardCharsets;
 public class BookCsvImporter implements CommandLineRunner {
 
     private final BookRepository bookRepository;
+    private final BookDocumentRepository bookDocumentRepository;
 
-    public BookCsvImporter(BookRepository bookRepository) {
+    public BookCsvImporter(
+            BookRepository bookRepository,
+            BookDocumentRepository bookDocumentRepository) {
+
         this.bookRepository = bookRepository;
+        this.bookDocumentRepository = bookDocumentRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
 
+        // H2 persistante
+        if (bookRepository.count() > 0) {
+            System.out.println("Books already imported. Skipping CSV import.");
+            return;
+        }
+
+        System.out.println("Importing books from CSV...");
+
         ClassPathResource resource = new ClassPathResource("books.csv");
 
         try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
+                new InputStreamReader(
+                        resource.getInputStream(),
+                        StandardCharsets.UTF_8));
              CSVParser parser = CSVFormat.DEFAULT.builder()
                      .setHeader()
                      .setSkipHeaderRecord(true)
@@ -45,8 +62,11 @@ public class BookCsvImporter implements CommandLineRunner {
                 String categories = record.get("categories");
                 String description = record.get("description");
 
-                Integer publishedYear = parseInteger(record.get("published_year"));
-                Double averageRating = parseDouble(record.get("average_rating"));
+                Integer publishedYear =
+                        parseInteger(record.get("published_year"));
+
+                Double averageRating =
+                        parseDouble(record.get("average_rating"));
 
                 Book book = new Book(
                         isbn13,
@@ -59,12 +79,46 @@ public class BookCsvImporter implements CommandLineRunner {
                         averageRating
                 );
 
-                bookRepository.save(book);
+                /*
+                 * Sauvegarde dans H2
+                 */
+                Book savedBook = bookRepository.save(book);
+
+                /*
+                 * Création du document Elasticsearch
+                 */
+                BookDocument document = new BookDocument(
+                        savedBook.getId(),
+                        savedBook.getIsbn13(),
+                        savedBook.getIsbn10(),
+                        savedBook.getTitle(),
+                        savedBook.getAuthors(),
+                        savedBook.getCategories(),
+                        savedBook.getDescription(),
+                        savedBook.getPublishedYear(),
+                        savedBook.getAverageRating()
+                );
+
+                /*
+                 * Indexation dans Elasticsearch
+                 */
+                bookDocumentRepository.save(document);
             }
         }
+
+        System.out.println(
+                "Import completed. Books in H2: "
+                        + bookRepository.count()
+        );
+
+        System.out.println(
+                "Books in Elasticsearch: "
+                        + bookDocumentRepository.count()
+        );
     }
 
     private Integer parseInteger(String value) {
+
         if (value == null || value.isBlank()) {
             return null;
         }
@@ -77,6 +131,7 @@ public class BookCsvImporter implements CommandLineRunner {
     }
 
     private Double parseDouble(String value) {
+
         if (value == null || value.isBlank()) {
             return null;
         }
