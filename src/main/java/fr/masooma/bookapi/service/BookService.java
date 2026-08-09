@@ -5,6 +5,8 @@ import fr.masooma.bookapi.model.Book;
 import fr.masooma.bookapi.model.BookDocument;
 import fr.masooma.bookapi.repository.BookDocumentRepository;
 import fr.masooma.bookapi.repository.BookRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,8 +52,8 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException(id));
     }
 
-    public List<BookDocument> searchBooks(String query) {
+    public Page<BookDocument> searchBooks(String query, Pageable pageable) {
         return bookDocumentRepository
-                .search(query);
+                .search(query, pageable);
     }
 }
