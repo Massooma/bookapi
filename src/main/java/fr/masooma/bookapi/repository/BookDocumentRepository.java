@@ -7,18 +7,19 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import java.util.List;
 public interface BookDocumentRepository extends ElasticsearchRepository<BookDocument, Long> {
 
+    // Ajout de poids pour prioriser la recherche
     @Query("""
-        {
-          "multi_match": {
-            "query": "?0",
-            "fields": [
-              "title",
-              "authors",
-              "categories",
-              "description"
-            ]
-          }
-        }
-        """)
+    {
+      "multi_match": {
+        "query": "?0",
+        "fields": [
+          "title^3",
+          "authors^2",
+          "categories^1.5",
+          "description"
+        ]
+      }
+    }
+    """)
     List<BookDocument> search(String query);
 }
