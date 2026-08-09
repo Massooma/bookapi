@@ -30,14 +30,14 @@ class BookServiceTest {
 
         Book book = new Book();
         book.setTitle("Clean Architecture");
-        book.setAuthor("Robert C. Martin");
+        book.setAuthors("Robert C. Martin");
 
         when(bookRepository.save(book)).thenReturn(book);
 
         Book result = bookService.saveBook(book);
 
         assertEquals("Clean Architecture", result.getTitle());
-        assertEquals("Robert C. Martin", result.getAuthor());
+        assertEquals("Robert C. Martin", result.getAuthors());
 
         verify(bookRepository).save(book);
     }
@@ -47,14 +47,14 @@ class BookServiceTest {
 
         Book book = new Book();
         book.setTitle("Clean Code");
-        book.setAuthor("Robert C. Martin");
+        book.setAuthors("Robert C. Martin");
 
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         Book result = bookService.getById(1L);
 
         assertEquals("Clean Code", result.getTitle());
-        assertEquals("Robert C. Martin", result.getAuthor());
+        assertEquals("Robert C. Martin", result.getAuthors());
 
         verify(bookRepository).findById(1L);
     }
@@ -77,11 +77,11 @@ class BookServiceTest {
 
         Book existingBook = new Book();
         existingBook.setTitle("Old Title");
-        existingBook.setAuthor("Old Author");
+        existingBook.setAuthors("Old Author");
 
         Book newBook = new Book();
         newBook.setTitle("New Title");
-        newBook.setAuthor("New Author");
+        newBook.setAuthors("New Author");
 
         when(bookRepository.findById(1L)).thenReturn(Optional.of(existingBook));
         when(bookRepository.save(existingBook)).thenReturn(existingBook);
@@ -89,7 +89,7 @@ class BookServiceTest {
         Book result = bookService.updateBook(1L, newBook);
 
         assertEquals("New Title", result.getTitle());
-        assertEquals("New Author", result.getAuthor());
+        assertEquals("New Author", result.getAuthors());
 
         verify(bookRepository).findById(1L);
         verify(bookRepository).save(existingBook);
@@ -100,7 +100,7 @@ class BookServiceTest {
 
         Book newBook = new Book();
         newBook.setTitle("New Title");
-        newBook.setAuthor("New Author");
+        newBook.setAuthors("New Author");
 
         when(bookRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -126,11 +126,11 @@ class BookServiceTest {
 
         Book book1 = new Book();
         book1.setTitle("Clean Code");
-        book1.setAuthor("Robert C. Martin");
+        book1.setAuthors("Robert C. Martin");
 
         Book book2 = new Book();
         book2.setTitle("Effective Java");
-        book2.setAuthor("Joshua Bloch");
+        book2.setAuthors("Joshua Bloch");
 
         List<Book> books = List.of(book1, book2);
 
