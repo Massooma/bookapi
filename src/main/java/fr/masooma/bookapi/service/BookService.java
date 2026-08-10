@@ -25,26 +25,58 @@ public class BookService {
         this.bookDocumentRepository = bookDocumentRepository;
     }
 
+    // convert a book to a bookDocument
+    private BookDocument toDocument(Book book) {
+        return new BookDocument(
+                book.getId(),
+                book.getIsbn13(),
+                book.getIsbn10(),
+                book.getTitle(),
+                book.getAuthors(),
+                book.getCategories(),
+                book.getDescription(),
+                book.getPublishedYear(),
+                book.getAverageRating()
+        );
+    }
+
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
     public Book saveBook(Book book) {
-        return bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
+        BookDocument document = toDocument(savedBook);
+        bookDocumentRepository.save(document);
+        return savedBook;
     }
 
     public void deleteBook(Long id) {
-        bookRepository.deleteById(id);
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException(id));
+
+        bookRepository.delete(book);
+        bookDocumentRepository.deleteById(id);
     }
 
     public Book updateBook(Long id, Book newBook) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException(id));
 
+        book.setIsbn13(newBook.getIsbn13());
+        book.setIsbn10(newBook.getIsbn10());
         book.setTitle(newBook.getTitle());
         book.setAuthors(newBook.getAuthors());
+        book.setCategories(newBook.getCategories());
+        book.setDescription(newBook.getDescription());
+        book.setPublishedYear(newBook.getPublishedYear());
+        book.setAverageRating(newBook.getAverageRating());
 
-        return bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
+
+        bookDocumentRepository.save(toDocument(savedBook));
+
+        return savedBook;
     }
 
     public Book getById(Long id) {
