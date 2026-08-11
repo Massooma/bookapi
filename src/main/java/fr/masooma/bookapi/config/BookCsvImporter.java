@@ -32,7 +32,6 @@ public class BookCsvImporter implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        // H2 persistante
         if (bookRepository.count() > 0) {
             System.out.println("Books already imported. Skipping CSV import.");
             return;
@@ -79,14 +78,8 @@ public class BookCsvImporter implements CommandLineRunner {
                         averageRating
                 );
 
-                /*
-                 * Sauvegarde dans H2
-                 */
                 Book savedBook = bookRepository.save(book);
 
-                /*
-                 * Création du document Elasticsearch
-                 */
                 BookDocument document = new BookDocument(
                         savedBook.getId(),
                         savedBook.getIsbn13(),
@@ -99,9 +92,6 @@ public class BookCsvImporter implements CommandLineRunner {
                         savedBook.getAverageRating()
                 );
 
-                /*
-                 * Indexation dans Elasticsearch
-                 */
                 bookDocumentRepository.save(document);
             }
         }

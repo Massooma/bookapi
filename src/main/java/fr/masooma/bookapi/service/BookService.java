@@ -25,7 +25,6 @@ public class BookService {
         this.bookDocumentRepository = bookDocumentRepository;
     }
 
-    // convert a book to a bookDocument
     private BookDocument toDocument(Book book) {
         return new BookDocument(
                 book.getId(),
@@ -44,10 +43,13 @@ public class BookService {
         return bookRepository.findAll();
     }
 
+    //TODO : gestion synchronisation entre H2 et Elasticsearch
     public Book saveBook(Book book) {
         Book savedBook = bookRepository.save(book);
+
         BookDocument document = toDocument(savedBook);
         bookDocumentRepository.save(document);
+
         return savedBook;
     }
 
@@ -60,6 +62,7 @@ public class BookService {
     }
 
     public Book updateBook(Long id, Book newBook) {
+
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException(id));
 
@@ -84,8 +87,10 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException(id));
     }
 
-    public Page<BookDocument> searchBooks(String query, Pageable pageable) {
-        return bookDocumentRepository
-                .search(query, pageable);
+    public Page<BookDocument> searchBooks(
+            String query,
+            Pageable pageable) {
+
+        return bookDocumentRepository.search(query, pageable);
     }
 }
